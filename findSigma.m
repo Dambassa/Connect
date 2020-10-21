@@ -1,4 +1,4 @@
-function [sigma] = findSigma(anySigmaRute,x,y,Rad)
+function [sigma] = findSigma(anySigmaRute,Rad)
 a=size(anySigmaRute,1);
 b=size(anySigmaRute,2);
 minSigma=Inf;

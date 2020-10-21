@@ -1,6 +1,7 @@
 function [] = DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix)
 
 rotate3d on
+grid on
 plot3(x(:),y(:),z(:),'o','MarkerEdgeColor','#ff7b00','Hittest','off');
 StartColor = 'Green'; 
 FinColor = 'Red'; 
@@ -16,12 +17,15 @@ for i=1:1:length(FullRute)
             case num2cell(1:9)
                 xOffset(1,i)=Way(1,i) -1.1;
                 yOffset(1,i)=Way(2,i) +5;
+                zOffset(1,i)=Way(3,i) +10;
             case num2cell(10:99)
                 xOffset(1,i)=Way(1,i) -2;
                 yOffset(1,i)=Way(2,i) +5;
+                zOffset(1,i)=Way(3,i) +10;
             otherwise 
                 xOffset(1,i)=Way(1,i)-3.8;
                 yOffset(1,i)=Way(2,i) +5;
+                zOffset(1,i)=Way(3,i) +10;
         end
 end
 

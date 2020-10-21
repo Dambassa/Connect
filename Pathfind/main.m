@@ -1,11 +1,11 @@
 function [cost,FullRute]=main(x,y,z,priority,Start,Fin,Rad,Sigma,CheckPoint)
 if ~isempty(CheckPoint)
     reshufle=perms(CheckPoint);
-    [CheckMinDist,CheckWay]= CheckPointCalc(Start,Fin,reshufle,x,y,Rad);
+    [CheckMinDist,CheckWay]= CheckPointCalc(Start,Fin,reshufle,x,y,z,Rad);
     if Sigma==0
         [matrix]=Graph(priority,x,y,z,Rad);%norm
     else
-        [matrix]=probability(priority,Sigma,x,y,Rad);%norm
+        [matrix]=probability(priority,Sigma,x,y,z,Rad);%norm
     end
     %%%%%%%%%%%%%%%%%
     matrix0=matrix;

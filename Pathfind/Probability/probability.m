@@ -1,4 +1,4 @@
-function [ProbabilityMatrix] = probability (priority,sigma,x,y,rad)
+function [ProbabilityMatrix] = probability (priority,sigma,x,y,z,rad)
 N=length(x); %количество элементов
 format long
 deltaX0=0.5;
@@ -16,8 +16,10 @@ j=1;
     while j<=N
         x0=x(1,i);
         y0=y(1,i);
+        z0=z(1,i);
         x1=x(1,j);
         y1=y(1,j);
+        z1=z(1,j);
         V=sqrt((x0+deltaX0-x1-deltaX1)^2+(y0+deltaY0-y1-deltaY1)^2+(z0+deltaZ0-z1+deltaZ1)^2);%ню по сути расстояние
         %a=V/sigma;
         %b=rad/sigma;

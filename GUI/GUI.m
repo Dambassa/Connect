@@ -484,6 +484,7 @@ global x y z priority Start Fin Rad CheckPoint colormatrix
 len=length(x);
 anySigmaRute=zeros(Rad,len);
 counter=0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 for sigma=0.1:0.1:Rad
 counter=counter+1;    
 [cost,FullRute]=main(x,y,z,priority,Start,Fin,Rad,sigma,CheckPoint);
@@ -496,8 +497,8 @@ else
     anySigmaRute(counter,len+1)=length(FullRute);
 end
 end
-
-[goodSigma]=findSigma(anySigmaRute,x,y,Rad);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[goodSigma]=findSigma(anySigmaRute,Rad);
 for i=1:length(goodSigma)
     a=[];
     for j=1:1:anySigmaRute(goodSigma(1,i),size(anySigmaRute,2))
@@ -507,9 +508,9 @@ for i=1:length(goodSigma)
     cla;
     cost=10;%костыль
     hold on
-    Way = [x(1,a(1,:)); y(1,a(1,:))];
+    Way = [x(1,a(1,:)); y(1,a(1,:)); z(1,a(1,:))];
     title(['\fontsize{16}σ = ',num2str(goodSigma(i)/10)]);
-    DrawLines(Way,CheckPoint,cost,Start,Fin,a,x,y,colormatrix);
+    DrawLines(Way,CheckPoint,cost,Start,Fin,a,x,y,z,colormatrix);
     hold off
 end
 assignin('base','anySigmaRute',anySigmaRute);
@@ -529,22 +530,3 @@ axes(handles.axes1);
 for i=1:size(clusterCoord,1)
 viscircles(clusterCoord(i,:),clusterRad,'Color','blue','LineWidth',1);  
 end
-
-% --- Executes on button press in radiobutton1.
-function radiobutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-if get(handles.radiobutton1,'Value')
-    
-end
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
-
-% --- Executes on button press in radiobutton1.
-function radiobutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.axes1,Position(1,3),86);
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
