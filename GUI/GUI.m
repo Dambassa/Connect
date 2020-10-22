@@ -58,8 +58,9 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 axes(handles.axes1);
-global x y z Start Fin SFcount Mode on
+global K x y z Start Fin SFcount Mode % K - счетчик для перехода между менюшками:)
 Mode=0;
+K = 0;
 x=[];
 y=[];
 z=[];
@@ -91,22 +92,92 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.uipanel2.Visible = 'on';
-if handles.radiobutton1.Value == 1
-    handles.uipanel1.Visible = 'on';
-    handles.uipanel4.Visible = 'off';
-    handles.checkbox1.Visible = 'off';
-    handles.checkbox1.Value = 0.0;
-elseif handles.radiobutton2.Value == 1
-    handles.uipanel1.Visible = 'on';
-    handles.uipanel4.Visible = 'off';
-    handles.checkbox1.Visible = 'on';
-    handles.checkbox1.Value = 1.0;
-elseif handles.radiobutton3.Value == 1
-    handles.uipanel4.Visible = 'on';
-    handles.uipanel1.Visible = 'off';
-    handles.checkbox1.Visible = 'off';
-    handles.checkbox1.Value = 0.0;
+global K
+global x y z priority PointCount Random colormatrix Scale
+global Mode
+if K==0
+    handles.uipanel6.Visible = 'off';
+    handles.uipanel2.Visible = 'on';
+    if handles.radiobutton11.Value == 1
+        handles.checkbox1.Visible = 'on';
+        handles.checkbox1.Value = 1.0;
+    end
+    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите далее. Если хотите вернуться назад - нажмите "Назад"';
+    K = K+1;
+elseif K==1
+    format long
+    PointCount = str2double(get(handles.edit5, 'String'));
+    Random = str2double(get(handles.edit6, 'String'));
+    Scale=200;
+    rng(Random);
+    handles.pushbutton3.Enable = 'on';
+    handles.pushbutton4.Enable = 'off';
+    handles.pushbutton1.Enable = 'off';
+    %%%%%%%%%%%%%%%%%%%%
+    axes(handles.axes1);
+    ax=gca;
+    ax.HitTest='on';
+    %%%%%%%%%%%%%%%%%%
+    %pd = makedist('Normal','mu',Scale/2,'sigma',20); %нормальное распределение
+    %x = random(pd,[1,PointCount]);
+    %y = random (pd,[1,PointCount]);
+    x=rand(1,PointCount)*Scale;
+    y=rand(1,PointCount)*Scale;
+    if handles.radiobutton4.Value==1 %если 2д
+        z=zeros(1,PointCount);
+    elseif handles.radiobutton5.Value==1 %3д
+        z=rand(1,PointCount)*Scale; 
+    end
+    %%%%%%%%%%%%%%%%%%%%%    
+    x(1,1)=0;
+    y(1,1)=200;
+    z(1,1)=0;
+    %%%%%%%%%%%%%%%%%%Приоритеты
+    if get(handles.checkbox1,'Value')
+        priority=randi([2,10],1,PointCount);
+    else
+        priority=zeros(1,PointCount);
+    end
+    colormatrix=colorPriority(priority);
+    %%%%%%%%%%%%%%%%%%%%
+    axes(handles.axes1);
+    cla(handles.axes1);
+    hold on
+    xlim([-50 Scale+50]);
+    ylim([-50 Scale+50]);
+    zlim([-50 Scale+50]);
+    for i=1:1:length(x)
+        plot3(x(1,i),y(1,i),z(1,i),'Marker','o','MarkerEdgeColor','#ffcd75','MarkerFaceColor',colormatrix(1,i),'Hittest','off','MarkerSize',11);
+    end
+    a=zeros(1,length(x));
+    for i=1:length(x)
+        a(1,i)=i;
+    end
+    text(x(:)-0.7,y(:)+0.1,z(:),string(a),'Fontsize',8,'Hittest','off');
+    hold off
+    %%%%%%%%%%%% кто б знал зачем это...Было в pushbutton3(Его больше нет)
+    format long
+    Mode = 1;
+    handles.pushbutton1.Enable = 'off';
+    handles.pushbutton2.Enable = 'off';
+    handles.pushbutton3.Enable = 'off';
+    handles.pushbutton4.Enable = 'off';
+    %%%%%%%%%%%%
+    
+    if handles.radiobutton13.Value == 1
+        handles.uipanel1.Visible = 'on';
+        handles.uipanel2.Visible = 'off';
+    elseif handles.radiobutton11.Value == 1
+        handles.uipanel1.Visible = 'on';
+        handles.uipanel2.Visible = 'off';
+    elseif handles.radiobutton12.Value == 1
+        handles.uipanel4.Visible = 'on';
+        handles.uipanel1.Visible = 'off';
+        handles.uipanel2.Visible = 'off';
+    end
+    K=K+1;
+elseif K == 2
+    
 end
 
 
@@ -321,68 +392,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global x y z priority PointCount Random colormatrix Scale
-format long
-PointCount = str2double(get(handles.edit5, 'String'));
-Random = str2double(get(handles.edit6, 'String'));
-Scale=200;
-rng(Random);
-handles.pushbutton3.Enable = 'on';
-handles.pushbutton4.Enable = 'off';
-handles.pushbutton1.Enable = 'off';
-%%%%%%%%%%%%%%%%%%%%
-axes(handles.axes1);
-ax=gca;
-ax.HitTest='on';
-%%%%%%%%%%%%%%%%%%
-%pd = makedist('Normal','mu',Scale/2,'sigma',20); %нормальное распределение
-%x = random(pd,[1,PointCount]);
-%y = random (pd,[1,PointCount]);
-x=rand(1,PointCount)*Scale;
-y=rand(1,PointCount)*Scale;
-if handles.radiobutton4.Value==1 %если 2д
-    z=zeros(1,PointCount);
-elseif handles.radiobutton5.Value==1 %3д
-    z=rand(1,PointCount)*Scale; 
-end
-%%%%%%%%%%%%%%%%%%%%%    
-x(1,1)=0;
-y(1,1)=200;
-z(1,1)=0;
-%%%%%%%%%%%%%%%%%%Приоритеты
-if get(handles.checkbox1,'Value')
-priority=randi([2,10],1,PointCount);
-else
-priority=zeros(1,PointCount);
-end
-colormatrix=colorPriority(priority);
-%%%%%%%%%%%%%%%%%%%%
-axes(handles.axes1);
-cla(handles.axes1);
-hold on
-xlim([-50 Scale+50]);
-ylim([-50 Scale+50]);
-zlim([-50 Scale+50]);
-for i=1:1:length(x)
-    plot3(x(1,i),y(1,i),z(1,i),'Marker','o','MarkerEdgeColor','#ffcd75','MarkerFaceColor',colormatrix(1,i),'Hittest','off','MarkerSize',11);
-end
-a=zeros(1,length(x));
-for i=1:length(x)
-    a(1,i)=i;
-end
-text(x(:)-0.7,y(:)+0.1,z(:),string(a),'Fontsize',8,'Hittest','off');
-hold off
-pushbutton3_Callback(hObject, eventdata, handles);
-
-
-
-
 % --- Executes on mouse press over axes background.
 function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to axes1 (see GCBO)
@@ -433,23 +442,6 @@ switch Mode
         hold off
  
 end      
-
-
-
-% --- Executes on button press in pushbutton3.
-function pushbutton3_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global Mode
-format long
-Mode = 1;
-handles.pushbutton1.Enable = 'off';
-handles.pushbutton2.Enable = 'off';
-handles.pushbutton3.Enable = 'off';
-handles.pushbutton4.Enable = 'off';
-
-
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over pushbutton3.
