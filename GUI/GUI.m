@@ -93,6 +93,7 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global K
+display(K);
 global x y z priority PointCount Random colormatrix Scale
 global Mode
 if K==0
@@ -102,7 +103,7 @@ if K==0
         handles.checkbox1.Visible = 'on';
         handles.checkbox1.Value = 1.0;
     end
-    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите далее. Если хотите вернуться назад - нажмите "Назад"';
+    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите "Продолжить". Если хотите вернуться назад - нажмите "Назад"';
     K = K+1;
 elseif K==1
     format long
@@ -176,8 +177,6 @@ elseif K==1
         handles.uipanel2.Visible = 'off';
     end
     K=K+1;
-elseif K == 2
-    
 end
 
 
@@ -522,3 +521,31 @@ axes(handles.axes1);
 for i=1:size(clusterCoord,1)
 viscircles(clusterCoord(i,:),clusterRad,'Color','blue','LineWidth',1);  
 end
+
+function pushbutton16_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global K
+display(K);
+if K == 1
+    handles.uipanel6.Visible = 'on';
+    handles.text19.String = 'Выберите необходимый режим работы и нажмите "Продолжить"';
+elseif K==2
+    handles.uipanel6.Visible = 'off';
+    handles.uipanel2.Visible = 'on';
+    if handles.radiobutton11.Value == 1
+        handles.checkbox1.Visible = 'on';
+        handles.checkbox1.Value = 1.0;
+    end
+    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите далее. Если хотите вернуться назад - нажмите "Назад"'; 
+end
+K=K-1;
+
+
+
+function pushbutton17_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+closereq;
