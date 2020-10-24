@@ -102,9 +102,13 @@ if K==0
     if handles.radiobutton11.Value == 1
         handles.checkbox1.Visible = 'on';
         handles.checkbox1.Value = 1.0;
+    else
+        handles.checkbox1.Visible = 'off';
+        handles.checkbox1.Value = 0.0;
     end
-    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите "Продолжить". Если хотите вернуться назад - нажмите "Назад"';
+    handles.text19.String = 'Выберите количество точек на графике и задайте схему построения точек.'; 
     K = K+1;
+    handles.pushbutton16.Visible = 'on';
 elseif K==1
     format long
     PointCount = str2double(get(handles.edit5, 'String'));
@@ -168,16 +172,22 @@ elseif K==1
     if handles.radiobutton13.Value == 1
         handles.uipanel1.Visible = 'on';
         handles.uipanel2.Visible = 'off';
+        handles.text19.String = 'Выберите начальную, финальную и контрольные точки (до 9), нажмите "Рассчитать" (построит маршрут с учетом введенного отклонения), Кнопка - "Зависимость от σ" построит графики зависимости;';
     elseif handles.radiobutton11.Value == 1
+        handles.text19.String = 'Выберите начальную, финальную и контрольные точки (до 9), нажмите "Рассчитать" (построит маршрут с учетом введенного отклонения), Кнопка - "Зависимость от σ" построит графики зависимости;'; 
         handles.uipanel1.Visible = 'on';
         handles.uipanel2.Visible = 'off';
     elseif handles.radiobutton12.Value == 1
+        handles.text19.String = 'Выберите начальную, финальную и контрольные точки (до 9), нажмите "Рассчитать" (построит маршрут с учетом введенного отклонения), Кнопка - "Зависимость от σ" построит графики зависимости;'; 
         handles.uipanel4.Visible = 'on';
         handles.uipanel1.Visible = 'off';
         handles.uipanel2.Visible = 'off';
     end
+    handles.pushbutton7.Visible = 'off';
     K=K+1;
+
 end
+
 
 
 function edit1_Callback(hObject, eventdata, handles)
@@ -529,18 +539,29 @@ function pushbutton16_Callback(hObject, eventdata, handles)
 global K
 display(K);
 if K == 1
+    handles.uipanel2.Visible = 'off';
     handles.uipanel6.Visible = 'on';
     handles.text19.String = 'Выберите необходимый режим работы и нажмите "Продолжить"';
 elseif K==2
+    cla;
+    handles.pushbutton7.Visible = 'on';
+    handles.uipanel4.Visible = 'off';
+    handles.uipanel1.Visible = 'off';
     handles.uipanel6.Visible = 'off';
     handles.uipanel2.Visible = 'on';
     if handles.radiobutton11.Value == 1
         handles.checkbox1.Visible = 'on';
         handles.checkbox1.Value = 1.0;
     end
-    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите далее. Если хотите вернуться назад - нажмите "Назад"'; 
+    handles.text19.String = 'Выберите количество точек на графике и задайте схему построения точек, нажмите "Продолжить". Вернуться назад - кнопка "Назад"'; 
 end
-K=K-1;
+if K>1
+    K=K-1;
+else
+    K=K-1;
+    handles.pushbutton16.Visible = 'off';
+end
+
 
 
 
