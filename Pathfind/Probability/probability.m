@@ -25,12 +25,12 @@ j=1;
         %b=rad/sigma;
         %P=1-marcumq(a,b);
         if V>=rad
-            c=10000;
-        elseif (isempty(priority) || (priority(1,j)==0) || (priority(1,j)==1))
+            c=Inf;
+        elseif (isempty(priority))
             E=exp(((-1)*(rad-V))/(sigma/2));
             P=1/(1+E);
             c=(-1)*log10(P); 
-        else 
+        elseif ((priority(1,j)==0) || (priority(1,j)==1)) 
             E=exp(((-1)*(rad-V+(priority(1,j)*2)))/(sigma/2));
             P=1/(1+E);                       %придумать что сделать с приоритетами
             c=(-1)*log10(P); 

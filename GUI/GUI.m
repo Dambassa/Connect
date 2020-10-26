@@ -88,25 +88,27 @@ varargout{1} = handles.output;
 
 
 % --- Executes on button press in pushbutton3.
-function pushbutton7_Callback(hObject, eventdata, handles)
+function pushbutton7_Callback(hObject, eventdata, handles)%кнопка построить точки
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global K
+global x y z priority PointCount Random colormatrix Scale Mode K 
 display(K);
-global x y z priority PointCount Random colormatrix Scale
-global Mode
 if K==0
     handles.uipanel6.Visible = 'off';
     handles.uipanel2.Visible = 'on';
     if handles.radiobutton11.Value == 1
         handles.checkbox1.Visible = 'on';
         handles.checkbox1.Value = 1.0;
+    else
+        handles.checkbox1.Visible = 'off';
+        handles.checkbox1.Value = 0.0;
     end
-    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите "Продолжить". Если хотите вернуться назад - нажмите "Назад"';
+    handles.text19.String = 'Выберите количество точек на графике и задайте схему построения точек.'; 
     K = K+1;
+    handles.pushbutton16.Visible = 'on';
 elseif K==1
-    format long
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%задание основных параметров
     PointCount = str2double(get(handles.edit5, 'String'));
     Random = str2double(get(handles.edit6, 'String'));
     Scale=200;
@@ -114,14 +116,11 @@ elseif K==1
     handles.pushbutton3.Enable = 'on';
     handles.pushbutton4.Enable = 'off';
     handles.pushbutton1.Enable = 'off';
-    %%%%%%%%%%%%%%%%%%%%
-    axes(handles.axes1);
-    ax=gca;
-    ax.HitTest='on';
     %%%%%%%%%%%%%%%%%%
     %pd = makedist('Normal','mu',Scale/2,'sigma',20); %нормальное распределение
     %x = random(pd,[1,PointCount]);
     %y = random (pd,[1,PointCount]);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%
     x=rand(1,PointCount)*Scale;
     y=rand(1,PointCount)*Scale;
     if handles.radiobutton4.Value==1 %если 2д
@@ -129,7 +128,7 @@ elseif K==1
     elseif handles.radiobutton5.Value==1 %3д
         z=rand(1,PointCount)*Scale; 
     end
-    %%%%%%%%%%%%%%%%%%%%%    
+    %%%%%%%%%%%%%%%%%%%%%need fix   
     x(1,1)=0;
     y(1,1)=200;
     z(1,1)=0;
@@ -140,42 +139,36 @@ elseif K==1
         priority=zeros(1,PointCount);
     end
     colormatrix=colorPriority(priority);
-    %%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%подготовка axes
+    rotate3d off
+    view(0,90);
     axes(handles.axes1);
+    set(handles.axes1,'HitTest','on');
     cla(handles.axes1);
     hold on
     xlim([-50 Scale+50]);
     ylim([-50 Scale+50]);
     zlim([-50 Scale+50]);
-    for i=1:1:length(x)
-        plot3(x(1,i),y(1,i),z(1,i),'Marker','o','MarkerEdgeColor','#ffcd75','MarkerFaceColor',colormatrix(1,i),'Hittest','off','MarkerSize',11);
-    end
-    a=zeros(1,length(x));
-    for i=1:length(x)
-        a(1,i)=i;
-    end
-    text(x(:)-0.7,y(:)+0.1,z(:),string(a),'Fontsize',8,'Hittest','off');
+    DrawLines([],[],[],[],[],[],x,y,z,colormatrix);
     hold off
-    %%%%%%%%%%%% кто б знал зачем это...Было в pushbutton3(Его больше нет)
-    format long
-    Mode = 1;
-    handles.pushbutton1.Enable = 'off';
-    handles.pushbutton2.Enable = 'off';
-    handles.pushbutton3.Enable = 'off';
-    handles.pushbutton4.Enable = 'off';
     %%%%%%%%%%%%
-    
+    Mode = 1;
+    %%%%%%%%%%%% 
     if handles.radiobutton13.Value == 1
         handles.uipanel1.Visible = 'on';
         handles.uipanel2.Visible = 'off';
+        handles.text19.String = 'Выберите начальную, финальную и контрольные точки (до 9), нажмите "Рассчитать" (построит маршрут с учетом введенного отклонения), Кнопка - "Зависимость от σ" построит графики зависимости;';
     elseif handles.radiobutton11.Value == 1
+        handles.text19.String = 'Выберите начальную, финальную и контрольные точки (до 9), нажмите "Рассчитать" (построит маршрут с учетом введенного отклонения), Кнопка - "Зависимость от σ" построит графики зависимости;';
         handles.uipanel1.Visible = 'on';
         handles.uipanel2.Visible = 'off';
     elseif handles.radiobutton12.Value == 1
+        handles.text19.String = 'Выберите начальную, финальную и контрольные точки (до 9), нажмите "Рассчитать" (построит маршрут с учетом введенного отклонения), Кнопка - "Зависимость от σ" построит графики зависимости;';
         handles.uipanel4.Visible = 'on';
         handles.uipanel1.Visible = 'off';
         handles.uipanel2.Visible = 'off';
     end
+    handles.pushbutton7.Visible = 'off';
     K=K+1;
 end
 
@@ -271,18 +264,19 @@ end
 
 
 % --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
+function pushbutton1_Callback(hObject, eventdata, handles)%кнопка найти маршрут
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global x y z Start Fin priority PointCount Random colormatrix Scale Rad CheckPoint Mode
+%%%%%%%%%%%%%%%%%%%%%задание основных значений
 Sigma = str2double(get(handles.edit4, 'String'));
 Rad = str2double(get(handles.edit3,'String'));
 Scale=200;
-handles.pushbutton3.Enable = 'off';
-handles.pushbutton4.Enable = 'off';
 Mode=0;
 rng(Random);
+handles.pushbutton3.Enable = 'off';
+handles.pushbutton4.Enable = 'off';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%тест
 assignin('base','x',x);
 assignin('base','y',y);
@@ -311,15 +305,18 @@ if length(CheckPoint)>9
             pushbutton2_Callback(hObject, eventdata, handles);
     end 
 else
-[cost,FullRute]=main(x,y,z,priority,Start,Fin,Rad,Sigma,CheckPoint);%norm
+[cost,FullRute]=main(x,y,z,priority,Start,Fin,Rad,Sigma,CheckPoint);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-cla;
 handles.pushbutton5.Enable='on';
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Way = [x(1,FullRute(1,:)); y(1,FullRute(1,:));z(1,FullRute(1,:))];%norm
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%отрисовка маршрута
+cla(handles.axes1);
+if handles.radiobutton5.Value==1 %если 3д
+   rotate3d on
+end
+Way = [x(1,FullRute(1,:)); y(1,FullRute(1,:)); z(1,FullRute(1,:))];
 hold on
-DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);%norm
+    DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);
 hold off
 %%%%%%%%%%%%%%%%%%
 
@@ -392,7 +389,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 % --- Executes on mouse press over axes background.
-function axes1_ButtonDownFcn(hObject, eventdata, handles)
+function axes1_ButtonDownFcn(hObject, eventdata, handles)%клики по графику
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -460,16 +457,8 @@ Mode = 2;
 axes(handles.axes1);
 set(gca,'Hittest','On');
 
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over pushbutton4.
-function pushbutton4_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to pushbutton4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
+function pushbutton5_Callback(hObject, eventdata, handles)%строятся 5 графиков с разными значениями сигмы
 % hObject    handle to pushbutton5 (see GCBO)
 global x y z priority Start Fin Rad CheckPoint colormatrix
 len=length(x);
@@ -496,6 +485,7 @@ for i=1:length(goodSigma)
     a(1,j)=anySigmaRute(goodSigma(1,i),j);%матрица точек нормальной сигмы
     end
     figure (i);
+    rotate3d on
     cla;
     cost=10;%костыль
     hold on
@@ -508,39 +498,56 @@ assignin('base','anySigmaRute',anySigmaRute);
 assignin('base','goodSigma',goodSigma);
 
 % --- Executes on button press in pushbutton6.
-function pushbutton6_Callback(hObject, eventdata, handles)
+function pushbutton6_Callback(hObject, eventdata, handles)%кластеризация
 % hObject    handle to pushbutton6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x y Scale
+global x y z colormatrix Scale
 assignin('base','x',x);
 clusterRad=str2double(get(handles.edit7, 'String'));
 [clusterCoord clusterDots]=Forel(x,y,clusterRad,Scale);
 assignin('base','clusterDots',clusterDots);
 axes(handles.axes1);
+cla;
+hold on
+DrawLines([],[],[],[],[],[],x,y,z,colormatrix);
+view(0,90);
 for i=1:size(clusterCoord,1)
 viscircles(clusterCoord(i,:),clusterRad,'Color','blue','LineWidth',1);  
 end
+hold off
 
-function pushbutton16_Callback(hObject, eventdata, handles)
+function pushbutton16_Callback(hObject, eventdata, handles)%кнопка назад
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global K
+global K Mode
 display(K);
 if K == 1
+    Mode = 0;
+    handles.uipanel2.Visible = 'off';
     handles.uipanel6.Visible = 'on';
     handles.text19.String = 'Выберите необходимый режим работы и нажмите "Продолжить"';
 elseif K==2
+    cla;
+    Mode = 0;
+    handles.pushbutton7.Visible = 'on';
+    handles.uipanel4.Visible = 'off';
+    handles.uipanel1.Visible = 'off';
     handles.uipanel6.Visible = 'off';
     handles.uipanel2.Visible = 'on';
     if handles.radiobutton11.Value == 1
         handles.checkbox1.Visible = 'on';
         handles.checkbox1.Value = 1.0;
     end
-    handles.text19.String = 'Выберите количество точек на графике и задайте тип случайного генератора точек, затем нажмите далее. Если хотите вернуться назад - нажмите "Назад"'; 
+    handles.text19.String = 'Выберите количество точек на графике и задайте схему построения точек, нажмите "Продолжить". Вернуться назад - кнопка "Назад"'; 
 end
-K=K-1;
+if K>1
+    K=K-1;
+else
+    K=K-1;
+    handles.pushbutton16.Visible = 'off';
+end
 
 
 
