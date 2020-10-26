@@ -170,7 +170,9 @@ elseif K==1
     end
     handles.pushbutton7.Visible = 'off';
     K=K+1;
+
 end
+
 
 
 function edit1_Callback(hObject, eventdata, handles)
