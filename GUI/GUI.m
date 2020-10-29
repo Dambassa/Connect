@@ -170,7 +170,6 @@ elseif K==1
     end
     handles.pushbutton7.Visible = 'off';
     K=K+1;
-
 end
 
 
@@ -507,15 +506,17 @@ function pushbutton6_Callback(hObject, eventdata, handles)%кластериза�
 global x y z colormatrix Scale
 assignin('base','x',x);
 clusterRad=str2double(get(handles.edit7, 'String'));
-[clusterCoord clusterDots]=Forel(x,y,clusterRad,Scale);
+[clusterCoord clusterDots]=Forel(x,y,z,clusterRad,Scale);
 assignin('base','clusterDots',clusterDots);
 axes(handles.axes1);
 cla;
 hold on
 DrawLines([],[],[],[],[],[],x,y,z,colormatrix);
 view(0,90);
+if  handles.radiobutton12.Value == 1 
 for i=1:size(clusterCoord,1)
 viscircles(clusterCoord(i,:),clusterRad,'Color','blue','LineWidth',1);  
+end
 end
 hold off
 
