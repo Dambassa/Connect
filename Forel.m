@@ -68,7 +68,7 @@ end
 clusterDots(temp(:),1,clusterCount)=x(tempDelDots(:));
 clusterDots(temp(:),2,clusterCount)=y(tempDelDots(:));
 clusterDots(temp(:),3,clusterCount)=z(tempDelDots(:));
-clusterDots(1,3,clusterCount)=length(temp);
+clusterDots(1,4,clusterCount)=length(temp);
 temp=[];
 x(tempDelDots(:))=[];
 y(tempDelDots(:))=[];

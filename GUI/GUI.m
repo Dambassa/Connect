@@ -513,10 +513,33 @@ cla;
 hold on
 DrawLines([],[],[],[],[],[],x,y,z,colormatrix);
 view(0,90);
-if  handles.radiobutton12.Value == 1 
-for i=1:size(clusterCoord,1)
-viscircles(clusterCoord(i,:),clusterRad,'Color','blue','LineWidth',1);  
+if  handles.radiobutton4.Value == 1 
+%for i=1:size(clusterCoord,1)
+%circleCenter=[clusterCoord(i,1) clusterCoord(i,2)];
+%viscircles(circleCenter,clusterRad,'Color','blue','LineWidth',1); 
+pause(1);
+for i=1:1:size(clusterDots,3)
+    pause(1);
+    color=randi([1 16777215]);
+    tempx(1,:)=clusterDots(:,1,i);
+    tempy(1,:)=clusterDots(:,2,i);
+    tempz(1,:)=clusterDots(:,3,i);
+    dotsCount=clusterDots(1,4,i);
+    DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
+
 end
+elseif handles.radiobutton5.Value == 1 
+    rotate3d on
+    for i=1:1:size(clusterDots,3)
+    color=randi([1 16777215]);
+    pause(1);
+    tempx(1,:)=clusterDots(:,1,i);
+    tempy(1,:)=clusterDots(:,2,i);
+    tempz(1,:)=clusterDots(:,3,i);
+    dotsCount=clusterDots(1,4,i);
+    DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
+    end 
+    
 end
 hold off
 
@@ -559,3 +582,117 @@ function pushbutton17_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 closereq;
+
+
+function pushbutton18_Callback(hObject, eventdata, handles)%шестиугольник
+% hObject    handle to pushbutton18 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global Scale
+cla(handles.axes1);
+circle_rad=str2double(get(handles.edit22,'String'));
+Scale=200;
+y_pos=0;
+even=0;
+counter=1;
+while y_pos<=Scale    
+    if even
+        x_pos=2*circle_rad;
+    else
+        x_pos=0.5*circle_rad;
+    end
+    while x_pos<=Scale
+        x(1,counter)=x_pos;
+        y(1,counter)=y_pos;
+        x_pos=x_pos+3*circle_rad;
+        counter=counter+1;
+    end
+    if even
+    x(1,counter)=Scale;
+    y(1,counter)=y_pos;
+    end
+    counter=counter+1;
+    y_pos=y_pos+(sqrt(3)/2*circle_rad);
+    even=xor(even,1);
+end
+y_pos=Scale;
+    if even
+        x_pos=2*circle_rad;
+    else
+        x_pos=0.5*circle_rad;
+    end
+    while x_pos<=Scale
+        x(1,counter)=x_pos;
+        y(1,counter)=y_pos;
+        x_pos=x_pos+3*circle_rad;
+        counter=counter+1;
+    end 
+    x(1,counter)=Scale;
+    y(1,counter)=y_pos;
+for i=1:1:counter
+    circleCenter=[x(1,i) y(1,i)];
+    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1); 
+end
+hold on
+plot(x(:),y(:),'o','MarkerEdgeColor','red');
+hold off
+
+
+
+function pushbutton19_Callback(hObject, eventdata, handles)%треугольник
+% hObject    handle to pushbutton19 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+
+function pushbutton20_Callback(hObject, eventdata, handles)%квадрат
+% hObject    handle to pushbutton20 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global Scale
+cla(handles.axes1);
+circle_rad=str2double(get(handles.edit22,'String'));
+side=(2*circle_rad)/sqrt(2);
+Scale=200;
+
+if (Scale-(mod((Scale-0.5*circle_rad)/(3*circle_rad)))<0.5*circle_rad)
+    
+    
+end
+
+
+y_pos=side/2;
+counter=1;
+while y_pos<=Scale    
+    x_pos=side/2;
+    while x_pos<=Scale
+        x(1,counter)=x_pos;
+        y(1,counter)=y_pos;
+        x_pos=x_pos+side;
+        counter=counter+1;
+    end
+    x(1,counter)=Scale;
+    y(1,counter)=y_pos;
+    counter=counter+1;
+    y_pos=y_pos+side;
+end
+y_pos=Scale;
+x_pos=side/2;
+    while x_pos<=Scale
+        x(1,counter)=x_pos;
+        y(1,counter)=y_pos;
+        x_pos=x_pos+side;
+        counter=counter+1;
+    end 
+    x(1,counter)=Scale;
+    y(1,counter)=y_pos;
+for i=1:1:counter
+    circleCenter=[x(1,i) y(1,i)];
+    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1); 
+end
+hold on
+plot(x(:),y(:),'o','MarkerEdgeColor','red');
+hold off
+
