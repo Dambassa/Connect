@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 09-Dec-2020 09:20:44
+% Last Modified by GUIDE v2.5 10-Dec-2020 11:47:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,6 +68,12 @@ Start =[];
 Mode = 0;
 Fin=[];
 SFcount=0;
+handles.uipanel2.Visible = 'off';
+handles.uipanel3.Visible = 'off';
+handles.uipanel4.Visible = 'off';
+handles.uipanel5.Visible = 'off';
+handles.pushbutton2.Enable = 'off';
+
 
 % UIWAIT makes GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -137,11 +143,13 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x y z priority PointCount Random colormatrix Scale Mode K 
+global x y z priority PointCount Random colormatrix Scale Mode K
+handles.pushbutton2.Enable = 'on';
 if K==0
     K = K+1;
-    if handles.radiobutton4 == 1
-        handles.uipanel5.Visible = 'on';
+    if handles.radiobutton4.Value == 1
+        display(K);
+        handles.uipanel3.Visible = 'on';
         handles.pushbutton1.Enable = 'off';
     else
         handles.uipanel4.Visible = 'on';
@@ -150,6 +158,11 @@ if K==0
     
 elseif K==1
     handles.uipanel4.Visible = 'off';
+    if handles.radiobutton3.Value == 1
+        handles.uipanel5.Visible = 'on';
+    else
+        handles.uipanel2.Visible = 'on';
+    end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%задание основных параметров
     PointCount = str2double(get(handles.edit3, 'String'));
     Random = str2double(get(handles.edit4, 'String'));
@@ -165,7 +178,7 @@ elseif K==1
     if handles.radiobutton5.Value==1 %если 2д
         z=zeros(1,PointCount);
     elseif handles.radiobutton6.Value==1 %3д
-        z=rand(1,PointCount)*Scale; 
+        z=rand(1,PointCount)*Scale;
     end
     %%%%%%%%%%%%%%%%%%%%%need fix   
     x(1,1)=0;
@@ -176,8 +189,6 @@ elseif K==1
         priority=zeros(1,PointCount);
     elseif handles.radiobutton2.Value == 1
             priority=randi([2,10],1,PointCount);
-    elseif handles.radiobutton3.Value == 1
-        handles.uipanel4.Visible = 'on';
     end
     
     colormatrix=colorPriority(priority);
@@ -196,7 +207,7 @@ elseif K==1
     %%%%%%%%%%%%
     Mode = 1;
     %%%%%%%%%%%% 
-    handles.pushbutton1.Visible = 'off';
+    handles.pushbutton1.Enable = 'off';
     K=K+1;
 end
 
@@ -207,35 +218,28 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global K Mode
-display(K);
 if K == 1
     Mode = 0;
-    handles.uipanel2.Visible = 'off';
-    handles.uipanel6.Visible = 'on';
-    handles.text19.String = 'Выберите необходимый режим работы и нажмите "Продолжить"';
+    handles.pushbutton1.Enable = 'on';
+    handles.pushbutton2.Enable = 'off';
+    handles.uipanel4.Visible = 'off';
+    handles.uipanel3.Visible = 'off';
+    handles.uipanel1.Visible = 'on';
 elseif K==2
     cla;
     Mode = 0;
-    handles.pushbutton7.Visible = 'on';
-    handles.uipanel4.Visible = 'off';
-    handles.uipanel1.Visible = 'off';
-    handles.uipanel6.Visible = 'off';
-    handles.uipanel2.Visible = 'on';
-    if handles.radiobutton11.Value == 1
-        handles.checkbox1.Visible = 'on';
-        handles.checkbox1.Value = 1.0;
-    end
-    handles.text19.String = 'Выберите количество точек на графике и задайте схему построения точек, нажмите "Продолжить". Вернуться назад - кнопка "Назад"'; 
+   if handles.radiobutton3.Value == 1
+        handles.uipanel5.Visible = 'off';
+   else
+       handles.uipanel2.Visible = 'off';
+   end
+   handles.pushbutton1.Enable = 'on';
+   handles.uipanel4.Visible = 'on';
 end
-if K>1
-    K=K-1;
-else
-    K=K-1;
-    handles.pushbutton16.Visible = 'off';
-end
-
-
+K=K-1;
 % --- Executes on button press in pushbutton3.
+
+
 function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -273,7 +277,7 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global x y z colormatrix Scale
 assignin('base','x',x);
-clusterRad=str2double(get(handles.edit7, 'String'));
+clusterRad=str2double(get(handles.edit5, 'String'));
 [clusterCoord clusterDots]=Forel(x,y,z,clusterRad,Scale);
 assignin('base','clusterDots',clusterDots);
 axes(handles.axes1);
@@ -371,6 +375,7 @@ y_pos=0;
 even=0;
 counter=1;
 while y_pos<=Scale    
+
     if even
         x_pos=2*circle_rad;
     else
@@ -382,35 +387,17 @@ while y_pos<=Scale
         x_pos=x_pos+3*circle_rad;
         counter=counter+1;
     end
-    if even
-    x(1,counter)=Scale;
-    y(1,counter)=y_pos;
-    end
-    counter=counter+1;
-    y_pos=y_pos+(sqrt(3)/2*circle_rad);
-    even=xor(even,1);
+        y_pos=y_pos+(sqrt(3)/2*circle_rad);
+        even=xor(even,1);
 end
-y_pos=Scale;
-    if even
-        x_pos=2*circle_rad;
-    else
-        x_pos=0.5*circle_rad;
-    end
-    while x_pos<=Scale
-        x(1,counter)=x_pos;
-        y(1,counter)=y_pos;
-        x_pos=x_pos+3*circle_rad;
-        counter=counter+1;
-    end 
-    x(1,counter)=Scale;
-    y(1,counter)=y_pos;
 for i=1:1:counter
     circleCenter=[x(1,i) y(1,i)];
-    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1); 
+    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1);
+    hold on
+    plot(x(i),y(i),'o','MarkerEdgeColor','red');
+    hold off
 end
-hold on
-plot(x(:),y(:),'o','MarkerEdgeColor','red');
-hold off
+
 
 
 % --- Executes on button press in pushbutton8.
@@ -424,11 +411,10 @@ circle_rad=str2double(get(handles.edit6,'String'));
 side=(2*circle_rad)/sqrt(2);
 Scale=200;
 
-if (Scale-(mod((Scale-0.5*circle_rad)/(3*circle_rad)))<0.5*circle_rad)
+if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)
     
     
 end
-
 
 y_pos=side/2;
 counter=1;
@@ -440,28 +426,16 @@ while y_pos<=Scale
         x_pos=x_pos+side;
         counter=counter+1;
     end
-    x(1,counter)=Scale;
-    y(1,counter)=y_pos;
-    counter=counter+1;
     y_pos=y_pos+side;
 end
-y_pos=Scale;
-x_pos=side/2;
-    while x_pos<=Scale
-        x(1,counter)=x_pos;
-        y(1,counter)=y_pos;
-        x_pos=x_pos+side;
-        counter=counter+1;
-    end 
-    x(1,counter)=Scale;
-    y(1,counter)=y_pos;
 for i=1:1:counter
     circleCenter=[x(1,i) y(1,i)];
     viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1); 
+    hold on
+    plot(x(i),y(i),'o','MarkerEdgeColor','red');
+    hold off
 end
-hold on
-plot(x(:),y(:),'o','MarkerEdgeColor','red');
-hold off
+
 
 
 
@@ -624,6 +598,46 @@ if handles.radiobutton5.Value==1 %если 3д
    rotate3d on
 end
 Way = [x(1,FullRute(1,:)); y(1,FullRute(1,:)); z(1,FullRute(1,:))];
-hold on
-    DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);
-hold off
+display(Way);
+%hold on
+  %  DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);
+%hold off
+
+
+% --- Executes on button press in pushbutton9.
+function pushbutton9_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global Scale
+cla(handles.axes1);
+circle_rad=str2double(get(handles.edit6,'String'));
+Scale=200;
+counter=1;
+bias = 0;
+y_pos = 0.5*circle_rad;
+x_pos = bias;
+even=0;
+for j=0:1:1
+    while y_pos<=Scale
+        x_pos = bias;
+        while x_pos<=Scale
+          x(1,counter)=x_pos;
+          y(1,counter)=y_pos;
+          x_pos=x_pos+2*circle_rad;
+          counter=counter+1;
+        end
+        y_pos=y_pos+(1.5*circle_rad);
+        even=xor(even,1);
+    end
+    bias = circle_rad;
+    x_pos = bias;
+    y_pos=circle_rad;
+end
+for i=1:1:counter
+    circleCenter=[x(1,i) y(1,i)];
+    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1);
+    hold on
+    plot(x(i),y(i),'o','MarkerEdgeColor','red');
+    hold off
+end
