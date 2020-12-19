@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 15-Dec-2020 13:36:55
+% Last Modified by GUIDE v2.5 19-Dec-2020 23:40:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -720,6 +720,182 @@ function edit7_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function edit7_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+
+
+% --- Executes on button press in pushbutton12.
+function pushbutton12_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Scale=200;
+PointCount=str2double(get(handles.edit3,'String'));
+Random = str2double(get(handles.edit4, 'String'));
+rng(Random);
+
+if handles.radiobutton10.Value==1  
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%настрока видимости
+    handles.uipanel4.Visible=1;
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%тест
+   downstep=str2double(get(handles.edit11,'String'));
+   step=str2double(get(handles.edit9,'String'));
+   start_radius=str2double(get(handles.edit8,'String'));
+   fin_radius=str2double(get(handles.edit10,'String'));
+   cluster_radius=[];
+   dots_count=[];
+   dots_matrix=[];
+   dots_table_names=[];
+   
+   for rad=start_radius:step:fin_radius
+       cluster_radius=[cluster_radius; rad];      
+   end
+   radius_table=table(cluster_radius);
+   tempPC=PointCount;
+   while tempPC>0
+   for rad=start_radius:step:fin_radius
+        x=rand(1,tempPC)*Scale;
+        y=rand(1,tempPC)*Scale;
+        if handles.radiobutton5.Value==1 %если 2д
+            z=zeros(1,tempPC);
+        elseif handles.radiobutton6.Value==1 %3д
+            z=rand(1,tempPC)*Scale;
+        end
+       [clusterCoord clusterDots]=Forel(x,y,z,rad,Scale);
+       dots_count=[dots_count; size(clusterDots,3)];
+   end
+       dots_matrix=[dots_matrix dots_count];%кол-во точек в каждом кластере
+       dots_count=[];
+       dots_table_names=[dots_table_names,strcat("dots_count_",num2str(tempPC))];
+       tempPC=tempPC-downstep;
+   end
+   dots_table=array2table(dots_matrix);
+   dots_table.Properties.VariableNames=dots_table_names;
+   result_table=cat(2,radius_table,dots_table);
+   
+   name=strcat('Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
+   [filename path]=uiputfile(name);
+   path=strcat(path,filename);
+   writetable(result_table,path,'Sheet',filename);
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+elseif handles.radiobutton11.Value==1
+    
+elseif handles.radiobutton12.Value==1
+end
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over pushbutton12.
+function pushbutton12_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to pushbutton12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit8_Callback(hObject, eventdata, handles)
+% hObject    handle to edit8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit8 as text
+%        str2double(get(hObject,'String')) returns contents of edit8 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit8_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit9_Callback(hObject, eventdata, handles)
+% hObject    handle to edit9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit9 as text
+%        str2double(get(hObject,'String')) returns contents of edit9 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit9_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit10_Callback(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit10 as text
+%        str2double(get(hObject,'String')) returns contents of edit10 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton13.
+function pushbutton13_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton14.
+function pushbutton14_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit11_Callback(hObject, eventdata, handles)
+% hObject    handle to edit11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit11 as text
+%        str2double(get(hObject,'String')) returns contents of edit11 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit11_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
