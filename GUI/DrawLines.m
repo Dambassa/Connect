@@ -58,14 +58,14 @@ end
 if cost == Inf
     plot3(x(1,Start),y(1,Start),z(1,Start),'Marker','o','MarkerFaceColor',StartColor,'Hittest','off','MarkerSize',Markersize);
     plot3(x(1,Fin),y(1,Fin),z(1,Fin),'Marker','o','MarkerFaceColor',FinColor,'Hittest','off','MarkerSize',Markersize);
-    msgbox('Way beetwen this dots with this radius do not exist.');
+    msgbox('Way beetwen this dots, with such radius, do not exist.');
 elseif cost==0
 elseif (isempty(Start) && isempty(Fin))
     text(xOffset(:),yOffset(:),zOffset(:),string(FullRute),'Fontsize',7,'Hittest','off');
 elseif  isempty(CheckPoint)
     plot3(Way(1,:),Way(2,:),Way(3,:),'Color',LineColor,'Hittest','off');
     for i=1:1:length(Way)
-        plot3(Way(1,i),Way(2,i),Way(3,i),'Marker','o','MarkerFaceColor',colormatrix(1,i),'MarkerEdgeColor',RandomDotsColor,'Hittest','off','MarkerSize',Markersize);
+    plot3(Way(1,i),Way(2,i),Way(3,i),'Marker','o','MarkerFaceColor',colormatrix(1,i),'MarkerEdgeColor',RandomDotsColor,'Hittest','off','MarkerSize',Markersize);
     end
     plot3(x(1,Start),y(1,Start),z(1,Start),'Marker','o','MarkerFaceColor',StartColor,'Hittest','off','MarkerSize',Markersize);
     plot3(x(1,Fin),y(1,Fin),z(1,Fin),'Marker','o','MarkerFaceColor',FinColor,'Hittest','off','MarkerSize',Markersize);
@@ -80,5 +80,4 @@ elseif ~isempty(CheckPoint)
     plot3(x(1,Fin),y(1,Fin),z(1,Fin),'Marker','o','MarkerFaceColor',FinColor,'Hittest','off','MarkerSize',Markersize);
     text(xOffset(:),yOffset(:),zOffset(:),string(FullRute),'Fontsize',Textsize,'Hittest','off');
 end
-
 end

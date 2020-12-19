@@ -605,7 +605,7 @@ display(Way);
 
 
 % --- Executes on button press in pushbutton9.
-function pushbutton9_Callback(hObject, eventdata, handles)
+function pushbutton9_Callback(hObject, eventdata, handles)%замощение шестиугольниками
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -644,7 +644,7 @@ end
 
 
 % --- Executes on button press in pushbutton10.
-function pushbutton10_Callback(hObject, eventdata, handles)
+function pushbutton10_Callback(hObject, eventdata, handles)%????????????
 % hObject    handle to pushbutton10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -653,12 +653,8 @@ function pushbutton10_Callback(hObject, eventdata, handles)
     circle_rad=str2double(get(handles.edit7,'String'));
     side=(2*circle_rad)/sqrt(2);
     Scale=200;
-
     if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)
-    
-    
     end
-
     y_pos=side/2;
     counter=1;
 while y_pos<=Scale    
@@ -679,63 +675,45 @@ end
      y1(1,Counter) = 0;
     end
     
-    for i=1:1:length(x)
+ for i=1:1:length(x)
         x1 = x1(1,i);
         x2 = x(1,i);
         y1 = y1(1,i);
         y2 = y(1,i);
-        x = x1(1,i):0.01:x(1,i);
+        DELAY = 0.01;
+        numPoints = 600;
+
+        %# create data
+        x = linspace(x1(1,i),numPoints,x(1,i));
         y =(((x-x1)*(y2-y1))/(x2-x1))+y1;
-         plot(x,y);
-         drawnow;
-    end
-    
-    DELAY = 0.01;
-numPoints = 600;
+        %# plot graph
+        figure('DoubleBuffer','on')                  %# no flickering
+        plot(x,y, 'LineWidth',2), grid on
+        xlabel('x'), ylabel('y'), title('y = log(x)')
 
-%# create data
-x = linspace(0,10,numPoints);
-y = log(x);
-z = x+2;
+        %# create moving point + coords text
+        hLine = line('XData',x(1), 'YData',y(1), 'Color','r', ...
+            'Marker','o', 'MarkerSize',6, 'LineWidth',2);
+        hTxt = text(x(1), y(1), sprintf('(%.3f,%.3f)',x(1),y(1)), ...
+          'Color',[0.2 0.2 0.2], 'FontSize',8, ...
+            'HorizontalAlignment','left', 'VerticalAlignment','top');
 
-%# plot graph
-figure('DoubleBuffer','on')                  %# no flickering
-plot(x,y, 'LineWidth',2), grid on
-plot(x,z, 'LineWidth',2), grid on
-xlabel('x'), ylabel('y'), title('y = log(x)')
+    %# infinite loop
+    i = 1;                                       %# index
+    while true
+        %# update point & text
+        set(hLine, 'XData',x(i), 'YData',y(i))
+     set(hTxt, 'Position',[x(i) y(i)], ...
+         'String',sprintf('(%.3f,%.3f)',[x(i) y(i)]))
+     drawnow                                  %# force refresh
+     %#pause(DELAY)                           %# slow down animation
 
-%# create moving point + coords text
-hLine = line('XData',x(1), 'YData',y(1), 'Color','r', ...
-    'Marker','o', 'MarkerSize',6, 'LineWidth',2);
-hTxt = text(x(1), y(1), sprintf('(%.3f,%.3f)',x(1),y(1)), ...
-    'Color',[0.2 0.2 0.2], 'FontSize',8, ...
-    'HorizontalAlignment','left', 'VerticalAlignment','top');
-hLine1 = line('XData',x(1), 'YData',z(1), 'Color','r', ...
-    'Marker','o', 'MarkerSize',6, 'LineWidth',2);
-hTxt1 = text(x(1), z(1), sprintf('(%.3f,%.3f)',x(1),z(1)), ...
-    'Color',[0.2 0.2 0.2], 'FontSize',8, ...
-    'HorizontalAlignment','left', 'VerticalAlignment','top');
-
-
-%# infinite loop
-i = 1;                                       %# index
-while true
-    %# update point & text
-    set(hLine, 'XData',x(i), 'YData',y(i))
-    set(hTxt, 'Position',[x(i) y(i)], ...
-        'String',sprintf('(%.3f,%.3f)',[x(i) y(i)]))
-     set(hLine1, 'XData',x(i), 'YData',z(i))
-    set(hTxt1, 'Position',[x(i) z(i)], ...
-        'String',sprintf('(%.3f,%.3f)',[x(i) z(i)]))
-    drawnow                                  %# force refresh
-    %#pause(DELAY)                           %# slow down animation
-
-    i = rem(i+1,numPoints)+1;                %# circular increment
+     i = rem(i+1,numPoints)+1;                %# circular increment
     if ~ishandle(hLine), break; end          %# in case you close the figure
+    end
 end
-
-
-
+    
+   
 function edit7_Callback(hObject, eventdata, handles)
 % hObject    handle to edit7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB

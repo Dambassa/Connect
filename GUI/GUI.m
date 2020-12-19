@@ -95,7 +95,7 @@ function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global x y z Start Fin SFcount Mode priority pt
+global x y z Start Fin SFcount Mode priority
 format long
 if isempty(x) && isempty(y)
 Mode = 0;
@@ -134,7 +134,6 @@ switch Mode
         hold on
         plot3(x(minIdx),y(minIdx),z(minIdx),'Marker','o','MarkerFaceColor','Blue','Hittest','off','MarkerSize',11);
         hold off
- 
 end
 
 
@@ -185,10 +184,10 @@ elseif K==1
     y(1,1)=200;
     z(1,1)=0;
     %%%%%%%%%%%%%%%%%%Приоритеты
-    if handles.radiobutton1.Value == 1
+    if handles.radiobutton2.Value == 0
         priority=zeros(1,PointCount);
     elseif handles.radiobutton2.Value == 1
-            priority=randi([2,10],1,PointCount);
+        priority=randi([2,10],1,PointCount);
     end
     
     colormatrix=colorPriority(priority);
@@ -271,7 +270,7 @@ end
 
 
 % --- Executes on button press in pushbutton6.
-function pushbutton6_Callback(hObject, eventdata, handles)
+function pushbutton6_Callback(hObject, eventdata, handles)%кластеризация
 % hObject    handle to pushbutton6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -286,19 +285,18 @@ hold on
 DrawLines([],[],[],[],[],[],x,y,z,colormatrix);
 view(0,90);
 if  handles.radiobutton5.Value == 1 
-%for i=1:size(clusterCoord,1)
-%circleCenter=[clusterCoord(i,1) clusterCoord(i,2)];
-%viscircles(circleCenter,clusterRad,'Color','blue','LineWidth',1); 
-pause(1);
-for i=1:1:size(clusterDots,3)
-    pause(1);
-    color=randi([1 16777215]);
-    tempx(1,:)=clusterDots(:,1,i);
-    tempy(1,:)=clusterDots(:,2,i);
-    tempz(1,:)=clusterDots(:,3,i);
-    dotsCount=clusterDots(1,4,i);
-    DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
-
+for i=1:size(clusterCoord,1)
+circleCenter=[clusterCoord(i,1) clusterCoord(i,2)];
+viscircles(circleCenter,clusterRad,'Color','blue','LineWidth',1); 
+% for i=1:1:size(clusterDots,3)
+%     pause(1);
+%     color=randi([1 16777215]);
+%     tempx(1,:)=clusterDots(:,1,i);
+%     tempy(1,:)=clusterDots(:,2,i);
+%     tempz(1,:)=clusterDots(:,3,i);
+%     dotsCount=clusterDots(1,4,i);
+%     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
+% end
 end
 elseif handles.radiobutton6.Value == 1 
     rotate3d on
@@ -310,8 +308,7 @@ elseif handles.radiobutton6.Value == 1
     tempz(1,:)=clusterDots(:,3,i);
     dotsCount=clusterDots(1,4,i);
     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
-    end 
-    
+    end     
 end
 hold off
 
@@ -411,11 +408,8 @@ circle_rad=str2double(get(handles.edit6,'String'));
 side=(2*circle_rad)/sqrt(2);
 Scale=200;
 
-if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)
-    
-    
+if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)   
 end
-
 y_pos=side/2;
 counter=1;
 while y_pos<=Scale    
@@ -578,7 +572,7 @@ for i=1:1:PointCount
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% путь между контрольными точками 
-if length(CheckPoint)>9 
+if length(CheckPoint)>9 %Не раобтает. убрать/сделать ?
     answer=questdlg('Too much checkpoints. Do you want to use an imprecise method ?',...
         'Menu',...
         'Yes','No','Return');
@@ -599,13 +593,13 @@ if handles.radiobutton5.Value==1 %если 3д
 end
 Way = [x(1,FullRute(1,:)); y(1,FullRute(1,:)); z(1,FullRute(1,:))];
 display(Way);
-%hold on
-  %  DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);
-%hold off
+hold on
+   DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);
+hold off
 
 
 % --- Executes on button press in pushbutton9.
-function pushbutton9_Callback(hObject, eventdata, handles)
+function pushbutton9_Callback(hObject, eventdata, handles)%замощение шестиугольниками
 % hObject    handle to pushbutton9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -644,7 +638,7 @@ end
 
 
 % --- Executes on button press in pushbutton10.
-function pushbutton10_Callback(hObject, eventdata, handles)
+function pushbutton10_Callback(hObject, eventdata, handles)%????????????
 % hObject    handle to pushbutton10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -653,12 +647,8 @@ function pushbutton10_Callback(hObject, eventdata, handles)
     circle_rad=str2double(get(handles.edit7,'String'));
     side=(2*circle_rad)/sqrt(2);
     Scale=200;
-
     if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)
-    
-    
     end
-
     y_pos=side/2;
     counter=1;
 while y_pos<=Scale    

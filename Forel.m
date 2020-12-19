@@ -1,60 +1,59 @@
 function [clusterCoord clusterDots] = Forel(x,y,z,clusterRad,scale)
 clusterCoord=[];
-size=20;%размер сегмента
 clusterCount=0;
 
+size=20;%размер сегмента
 tempX=0;
 tempY=0;
 tempZ=0;
 counter=1;
 
-segment=zeros([3 round(scale/size)]);
-for i=0:size:scale
-tempX=0;    
-    for j=0:size:scale
-        tempZ=0;
-        for k=0:size:scale
-            segment(1,counter)=tempX;
-            segment(2,counter)=tempY;
-            segment(3,counter)=tempZ;
-            tempZ=tempZ+size;
-            counter=counter+1;
-        end
-        tempX=tempX+size; 
-    end
-tempY=tempY+size;
-end
+% segment=zeros([3 round(scale/size)]);
+% for i=0:size:scale
+% tempX=0;    
+%     for j=0:size:scale
+%         tempZ=0;
+%         for k=0:size:scale
+%             segment(1,counter)=tempX;
+%             segment(2,counter)=tempY;
+%             segment(3,counter)=tempZ;
+%             tempZ=tempZ+size;
+%             counter=counter+1;
+%         end
+%         tempX=tempX+size; 
+%     end
+% tempY=tempY+size;
+% end
 
 
 while ((~isempty(x))&&(~isempty(y)) && (~isempty(z)))
-matrix=zeros(length(x));
+distance_matrix=zeros(length(x));
 
-for i=1:length(segment)%расстояние от сегментов до всех точек
+for i=1:length(x)%расстояние от одной до кажлой другой
     for j=1:length(x)
-        matrix(i,j)= sqrt((segment(1,i)-x(1,j))^2+(segment(2,i)-y(1,j))^2+(segment(3,i)-z(1,j))^2);
+        distance_matrix(i,j)= sqrt((x(1,i)-x(1,j))^2+(y(1,i)-y(1,j))^2+(z(1,i)-z(1,j))^2);
     end
 end
 
-
 concMax=0;
-for i=1:length(segment)%поиск наибольшего сгущения точек
+for i=1:length(x)%поиск наибольшего сгущения точек
     conc=0;
     for j=1:length(x)
-        if (matrix(i,j)<=clusterRad)
+        if (distance_matrix(i,j)<=clusterRad)
             conc=conc+1;
         end
     end
-    if (concMax<=conc)
+    if (conc>=concMax)
         concMax=conc;
         cluster=i;
-        tempCoord=[segment(1,i) segment(2,i) segment(3,i)];%координаты центра кластера
+        tempCoord=[x(1,i) y(1,i) z(1,i)];%координаты центра кластера
     end
 end
 clusterCoord=cat(1,clusterCoord,tempCoord);
 
 tempDelDots=[];
 for i=1:length(x)%исключение уже покрытых точек
-    if matrix(cluster,i)<=clusterRad 
+    if distance_matrix(cluster,i)<=clusterRad 
         tempDelDots=cat(2,tempDelDots,i);
     end
 end
