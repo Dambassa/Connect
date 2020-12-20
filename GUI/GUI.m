@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 19-Dec-2020 23:40:11
+% Last Modified by GUIDE v2.5 21-Dec-2020 01:47:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -738,57 +738,16 @@ function pushbutton12_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton12 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-Scale=200;
-PointCount=str2double(get(handles.edit3,'String'));
-Random = str2double(get(handles.edit4, 'String'));
-rng(Random);
-
-if handles.radiobutton10.Value==1  
+global K
+if handles.radiobutton10.Value==1%тест кластеризации
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%настрока видимости
     handles.uipanel4.Visible=1;
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%тест
-   downstep=str2double(get(handles.edit11,'String'));
-   step=str2double(get(handles.edit9,'String'));
-   start_radius=str2double(get(handles.edit8,'String'));
-   fin_radius=str2double(get(handles.edit10,'String'));
-   cluster_radius=[];
-   dots_count=[];
-   dots_matrix=[];
-   dots_table_names=[];
-   
-   for rad=start_radius:step:fin_radius
-       cluster_radius=[cluster_radius; rad];      
-   end
-   radius_table=table(cluster_radius);
-   tempPC=PointCount;
-   while tempPC>0
-   for rad=start_radius:step:fin_radius
-        x=rand(1,tempPC)*Scale;
-        y=rand(1,tempPC)*Scale;
-        if handles.radiobutton5.Value==1 %если 2д
-            z=zeros(1,tempPC);
-        elseif handles.radiobutton6.Value==1 %3д
-            z=rand(1,tempPC)*Scale;
-        end
-       [clusterCoord clusterDots]=Forel(x,y,z,rad,Scale);
-       dots_count=[dots_count; size(clusterDots,3)];
-   end
-       dots_matrix=[dots_matrix dots_count];%кол-во точек в каждом кластере
-       dots_count=[];
-       dots_table_names=[dots_table_names,strcat("dots_count_",num2str(tempPC))];
-       tempPC=tempPC-downstep;
-   end
-   dots_table=array2table(dots_matrix);
-   dots_table.Properties.VariableNames=dots_table_names;
-   result_table=cat(2,radius_table,dots_table);
-   
-   name=strcat('Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
-   [filename path]=uiputfile(name);
-   path=strcat(path,filename);
-   writetable(result_table,path,'Sheet',filename);
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif handles.radiobutton11.Value==1
-    
+    handles.uipanel8.Visible=1;
+   %%%%%%%%%%%%%%%%%%%%%%%%%%  
+elseif handles.radiobutton11.Value==1%тест построения маршрутов
+    K=0;
+    pushbutton1_Callback(hObject, eventdata, handles);
+    handles.uipanel10.Visible=1;
 elseif handles.radiobutton12.Value==1
 end
 
@@ -874,14 +833,57 @@ function pushbutton13_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.uipanel7.Visible=xor(handles.uipanel7.Visible,1);
 
 % --- Executes on button press in pushbutton14.
 function pushbutton14_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+Scale=200;
+PointCount=str2double(get(handles.edit3,'String'));
+Random = str2double(get(handles.edit4, 'String'));
+rng(Random); 
+downstep=str2double(get(handles.edit11,'String'));
+   step=str2double(get(handles.edit9,'String'));
+   start_radius=str2double(get(handles.edit8,'String'));
+   fin_radius=str2double(get(handles.edit10,'String'));
+   cluster_radius=[];
+   dots_count=[];
+   dots_matrix=[];
+   dots_table_names=[];
+   
+   for rad=start_radius:step:fin_radius
+       cluster_radius=[cluster_radius; rad];      
+   end
+   radius_table=table(cluster_radius);
+   tempPC=PointCount;
+   while tempPC>0
+   for rad=start_radius:step:fin_radius
+        x=rand(1,tempPC)*Scale;
+        y=rand(1,tempPC)*Scale;
+        if handles.radiobutton5.Value==1 %если 2д
+            z=zeros(1,tempPC);
+        elseif handles.radiobutton6.Value==1 %3д
+            z=rand(1,tempPC)*Scale;
+        end
+       [clusterCoord clusterDots]=Forel(x,y,z,rad,Scale);
+       dots_count=[dots_count; size(clusterDots,3)];
+   end
+       dots_matrix=[dots_matrix dots_count];%кол-во точек в каждом кластере
+       dots_count=[];
+       dots_table_names=[dots_table_names,strcat("dots_count_",num2str(tempPC))];
+       tempPC=tempPC-downstep;
+   end
+   dots_table=array2table(dots_matrix);
+   dots_table.Properties.VariableNames=dots_table_names;
+   result_table=cat(2,radius_table,dots_table);
+   
+   name=strcat('t1_Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
+   [filename path]=uiputfile(name);
+   path=strcat(path,filename);
+   writetable(result_table,path,'Sheet',filename);
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 function edit11_Callback(hObject, eventdata, handles)
@@ -904,3 +906,76 @@ function edit11_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+function edit12_Callback(hObject, eventdata, handles)
+% hObject    handle to edit12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit12 as text
+%        str2double(get(hObject,'String')) returns contents of edit12 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit12_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit14_Callback(hObject, eventdata, handles)
+% hObject    handle to edit14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit14 as text
+%        str2double(get(hObject,'String')) returns contents of edit14 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit14_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit14 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes on button press in pushbutton15.
+function pushbutton15_Callback(hObject, eventdata, handles)%тест маршрутов
+% hObject    handle to pushbutton15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global x y z Start Fin priority Random PointCount
+Scale=200;
+downstep=str2double(get(handles.edit14,'String'));
+actradius=str2double(get(handles.edit12,'String'));
+cost=NaN;
+rute_array=[];
+cost_array=[];
+rad_array=[];
+while cost~=Inf || actradius<=0
+[cost,FullRute]=main(x,y,z,priority,Start,Fin,actradius,0,[]);
+rute_array=[rute_array;length(FullRute)];
+cost_array=[cost_array;cost];
+rad_array=[rad_array;actradius];
+actradius=actradius-downstep;
+end
+    result_table=table(rad_array,rute_array,cost_array);
+    result_table.Properties.VariableNames={'action_radius','dots_in_rute','rute_cost'};
+   name=strcat('t2_Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
+   [filename path]=uiputfile(name);
+   path=strcat(path,filename);
+   writetable(result_table,path,'Sheet',filename);
