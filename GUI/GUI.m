@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 21-Dec-2020 01:47:56
+% Last Modified by GUIDE v2.5 22-Dec-2020 22:59:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -592,7 +592,6 @@ if handles.radiobutton5.Value==1 %если 3д
    rotate3d on
 end
 Way = [x(1,FullRute(1,:)); y(1,FullRute(1,:)); z(1,FullRute(1,:))];
-display(Way);
 hold on
    DrawLines(Way,CheckPoint,cost,Start,Fin,FullRute,x,y,z,colormatrix);
 hold off
@@ -833,32 +832,31 @@ function pushbutton13_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.uipanel7.Visible=xor(handles.uipanel7.Visible,1);
+handles.uipane7.Visible=xor(handles.uipanel7.Visible,1);
 
 % --- Executes on button press in pushbutton14.
-function pushbutton14_Callback(hObject, eventdata, handles)
+function pushbutton14_Callback(hObject, eventdata, handles)%тест кластеризации
 % hObject    handle to pushbutton14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-Scale=200;
 PointCount=str2double(get(handles.edit3,'String'));
 Random = str2double(get(handles.edit4, 'String'));
-rng(Random); 
 downstep=str2double(get(handles.edit11,'String'));
-   step=str2double(get(handles.edit9,'String'));
-   start_radius=str2double(get(handles.edit8,'String'));
-   fin_radius=str2double(get(handles.edit10,'String'));
-   cluster_radius=[];
-   dots_count=[];
-   dots_matrix=[];
-   dots_table_names=[];
-   
-   for rad=start_radius:step:fin_radius
-       cluster_radius=[cluster_radius; rad];      
-   end
-   radius_table=table(cluster_radius);
-   tempPC=PointCount;
-   while tempPC>0
+step=str2double(get(handles.edit9,'String'));
+start_radius=str2double(get(handles.edit8,'String'));
+fin_radius=str2double(get(handles.edit10,'String'));
+Scale=200;
+rng(Random); 
+cluster_radius=[];
+dots_count=[];
+dots_matrix=[];
+dots_table_names=[];  
+for rad=start_radius:step:fin_radius
+    cluster_radius=[cluster_radius; rad];      
+end
+radius_table=table(cluster_radius);
+tempPC=PointCount;
+while tempPC>0
    for rad=start_radius:step:fin_radius
         x=rand(1,tempPC)*Scale;
         y=rand(1,tempPC)*Scale;
@@ -872,18 +870,95 @@ downstep=str2double(get(handles.edit11,'String'));
    end
        dots_matrix=[dots_matrix dots_count];%кол-во точек в каждом кластере
        dots_count=[];
-       dots_table_names=[dots_table_names,strcat("dots_count_",num2str(tempPC))];
+       dots_table_names=[dots_table_names,strcat("Clusters_count_(",num2str(tempPC),"_dots)")];
        tempPC=tempPC-downstep;
-   end
-   dots_table=array2table(dots_matrix);
-   dots_table.Properties.VariableNames=dots_table_names;
-   result_table=cat(2,radius_table,dots_table);
-   
-   name=strcat('t1_Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
-   [filename path]=uiputfile(name);
-   path=strcat(path,filename);
-   writetable(result_table,path,'Sheet',filename);
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
+dots_table=array2table(dots_matrix);
+dots_table.Properties.VariableNames=dots_table_names;
+result_table=cat(2,radius_table,dots_table); 
+name=strcat('t1_Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
+[filename path]=uiputfile(name);
+path=strcat(path,filename);
+writetable(result_table,path,'Sheet',filename);
+
+
+% --- Executes on button press in pushbutton15.
+function pushbutton15_Callback(hObject, eventdata, handles)%тест маршрутов
+% hObject    handle to pushbutton15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global x y z Start Fin priority Random PointCount
+Scale=200;
+step=str2double(get(handles.edit14,'String'));
+startradius=str2double(get(handles.edit12,'String'));
+endradius=str2double(get(handles.edit15,'String'));
+cost=NaN;
+rute_array=[];
+cost_array=[];
+rad_array=[];
+for i=startradius:step:endradius
+[cost,FullRute]=main(x,y,z,priority,Start,Fin,i,0,[]);
+if cost>2
+    cost=NaN;
+    FullRute=[];
+end
+rute_array=[rute_array;length(FullRute)];
+cost_array=[cost_array;cost];
+rad_array=[rad_array;i];
+end
+result_table=table(rad_array,rute_array,cost_array);
+result_table.Properties.VariableNames={'action_radius','dots_in_rute','rute_cost'};
+name=strcat('t2_Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
+[filename path]=uiputfile(name);
+path=strcat(path,filename);
+writetable(result_table,path,'Sheet',filename);
+
+
+% --- Executes on selection change in popupmenu1.
+function popupmenu1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit15_Callback(hObject, eventdata, handles)
+% hObject    handle to edit15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit15 as text
+%        str2double(get(hObject,'String')) returns contents of edit15 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit15_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 
 
 function edit11_Callback(hObject, eventdata, handles)
@@ -909,18 +984,20 @@ end
 
 
 
-function edit12_Callback(hObject, eventdata, handles)
-% hObject    handle to edit12 (see GCBO)
+
+
+function edit16_Callback(hObject, eventdata, handles)
+% hObject    handle to edit16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit12 as text
-%        str2double(get(hObject,'String')) returns contents of edit12 as a double
+% Hints: get(hObject,'String') returns contents of edit16 as text
+%        str2double(get(hObject,'String')) returns contents of edit16 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit12_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit12 (see GCBO)
+function edit16_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -929,53 +1006,3 @@ function edit12_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function edit14_Callback(hObject, eventdata, handles)
-% hObject    handle to edit14 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit14 as text
-%        str2double(get(hObject,'String')) returns contents of edit14 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit14_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit14 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on button press in pushbutton15.
-function pushbutton15_Callback(hObject, eventdata, handles)%тест маршрутов
-% hObject    handle to pushbutton15 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global x y z Start Fin priority Random PointCount
-Scale=200;
-downstep=str2double(get(handles.edit14,'String'));
-actradius=str2double(get(handles.edit12,'String'));
-cost=NaN;
-rute_array=[];
-cost_array=[];
-rad_array=[];
-while cost~=Inf || actradius<=0
-[cost,FullRute]=main(x,y,z,priority,Start,Fin,actradius,0,[]);
-rute_array=[rute_array;length(FullRute)];
-cost_array=[cost_array;cost];
-rad_array=[rad_array;actradius];
-actradius=actradius-downstep;
-end
-    result_table=table(rad_array,rute_array,cost_array);
-    result_table.Properties.VariableNames={'action_radius','dots_in_rute','rute_cost'};
-   name=strcat('t2_Rng',num2str(Random),'_PC',num2str(PointCount),'_Scale',num2str(Scale),'.xls');
-   [filename path]=uiputfile(name);
-   path=strcat(path,filename);
-   writetable(result_table,path,'Sheet',filename);
