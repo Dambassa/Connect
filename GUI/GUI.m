@@ -1,4 +1,4 @@
-function varargout = GUI(varargin)
+unction varargout = GUI(varargin)
 %GUI MATLAB code file for GUI.fig
 %      GUI, by itself, creates a new GUI or raises the existing
 %      singleton*.
@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 15-Dec-2020 13:36:55
+% Last Modified by GUIDE v2.5 11-Jan-2021 18:25:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -55,10 +55,10 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for GUI
 handles.output = hObject;
-
 % Update handles structure
 guidata(hObject, handles);
-global K x y z Start Fin SFcount Mode % K - счетчик для перехода между менюшками:)
+movegui(gcf,'center');
+global K x y z Start Fin SFcount Mode
 Mode=0;
 K = 0;
 x=[];
@@ -73,7 +73,10 @@ handles.uipanel3.Visible = 'off';
 handles.uipanel4.Visible = 'off';
 handles.uipanel5.Visible = 'off';
 handles.pushbutton2.Enable = 'off';
-
+%  tabgp = uitabgroup(gcf,'Position',[.05 .05 .3 .8]);%check
+%  tab1 = uitab(tabgp,'Title','Main');
+%  uipanel6
+%  tab2 = uitab(tabgp,'Title','Options');
 
 % UIWAIT makes GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -108,6 +111,7 @@ switch Mode
             case 1
                 axes(handles.axes1);
                 set(gca,'Hittest','On');
+                handles.pushbutton2.Enable='off';
                 pt =  get(gca, 'CurrentPoint');
                 minIdx=FindCoord(x,y,pt);
                 Start=minIdx;
@@ -117,13 +121,13 @@ switch Mode
             case 2
                 axes(handles.axes1);
                 set(gca,'Hittest','On');
+                handles.pushbutton2.Enable='on';
                 pt =  get(gca, 'CurrentPoint');
                 minIdx=FindCoord(x,y,pt);
                 Fin=minIdx;
                 hold on
                 plot3(x(minIdx),y(minIdx),z(minIdx),'Marker','o','MarkerFaceColor','Red','Hittest','off','MarkerSize',11);
                 hold off 
-                %set(gca,'Hittest','Off');
                 SFcount = 0;
                 Mode=2;
        end
@@ -216,7 +220,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global K Mode
+global K Mode Start Fin 
 if K == 1
     Mode = 0;
     handles.pushbutton1.Enable = 'on';
@@ -224,9 +228,17 @@ if K == 1
     handles.uipanel4.Visible = 'off';
     handles.uipanel3.Visible = 'off';
     handles.uipanel1.Visible = 'on';
+    rotate3d off
+    cla;
+    Start=[];
+    Fin=[];
+    view(0,90);
 elseif K==2
     cla;
+    Start=[];
+    Fin=[];
     Mode = 0;
+    view(0,90);
    if handles.radiobutton3.Value == 1
         handles.uipanel5.Visible = 'off';
    else
@@ -287,6 +299,7 @@ view(0,90);
 if  handles.radiobutton5.Value == 1 
 for i=1:size(clusterCoord,1)
 circleCenter=[clusterCoord(i,1) clusterCoord(i,2)];
+plot(circleCenter(1),circleCenter(2),'Marker','o','MarkerEdgeColor','red','MarkerSize',20);
 viscircles(circleCenter,clusterRad,'Color','blue','LineWidth',1); 
 % for i=1:1:size(clusterDots,3)
 %     pause(1);
@@ -302,11 +315,11 @@ elseif handles.radiobutton6.Value == 1
     rotate3d on
     for i=1:1:size(clusterDots,3)
     color=randi([1 16777215]);
-    pause(1);
     tempx(1,:)=clusterDots(:,1,i);
     tempy(1,:)=clusterDots(:,2,i);
     tempz(1,:)=clusterDots(:,3,i);
     dotsCount=clusterDots(1,4,i);
+    plot3(clusterCoord(i,1),clusterCoord(i,2),clusterCoord(i,3),'Marker','o','MarkerEdgeColor','red','MarkerSize',20);
     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
     end     
 end
@@ -531,8 +544,12 @@ for i=1:length(goodSigma)
     a(1,j)=anySigmaRute(goodSigma(1,i),j);%матрица точек нормальной сигмы
     end
     figure (i);
-    rotate3d on
     cla;
+    if handles.radiobutton6.Value==1
+    rotate3d on
+    else  
+    rotate3d off
+    end
     cost=10;%костыль
     hold on
     Way = [x(1,a(1,:)); y(1,a(1,:)); z(1,a(1,:))];
@@ -588,8 +605,10 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%отрисовка маршрута
 cla(handles.axes1);
-if handles.radiobutton5.Value==1 %если 3д
-   rotate3d on
+if handles.radiobutton6.Value==1
+    rotate3d on
+else  
+    rotate3d off
 end
 Way = [x(1,FullRute(1,:)); y(1,FullRute(1,:)); z(1,FullRute(1,:))];
 display(Way);
@@ -635,78 +654,6 @@ for i=1:1:counter
     plot(x(i),y(i),'o','MarkerEdgeColor','red');
     hold off
 end
-
-
-% --- Executes on button press in pushbutton10.
-function pushbutton10_Callback(hObject, eventdata, handles)%????????????
-% hObject    handle to pushbutton10 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-    global Scale
-    cla(handles.axes1);
-    circle_rad=str2double(get(handles.edit7,'String'));
-    side=(2*circle_rad)/sqrt(2);
-    Scale=200;
-    if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)
-    end
-    y_pos=side/2;
-    counter=1;
-while y_pos<=Scale    
-    x_pos=side/2;
-    while x_pos<=Scale
-        x(1,counter)=x_pos;
-        y(1,counter)=y_pos;
-        x_pos=x_pos+side;
-        counter=counter+1;
-    end
-    y_pos=y_pos+side;
-end
-    
-     x_pos = 0;
-    for Counter = 1:1:length(x)
-     x1(1,Counter)= x_pos;
-     x_pos = x_pos + 5;
-     y1(1,Counter) = 0;
-    end
-    
- for i=1:1:length(x)
-        x1 = x1(1,i);
-        x2 = x(1,i);
-        y1 = y1(1,i);
-        y2 = y(1,i);
-        DELAY = 0.01;
-        numPoints = 600;
-
-        %# create data
-        x = linspace(x1(1,i),numPoints,x(1,i));
-        y =(((x-x1)*(y2-y1))/(x2-x1))+y1;
-        %# plot graph
-        figure('DoubleBuffer','on')                  %# no flickering
-        plot(x,y, 'LineWidth',2), grid on
-        xlabel('x'), ylabel('y'), title('y = log(x)')
-
-        %# create moving point + coords text
-        hLine = line('XData',x(1), 'YData',y(1), 'Color','r', ...
-            'Marker','o', 'MarkerSize',6, 'LineWidth',2);
-        hTxt = text(x(1), y(1), sprintf('(%.3f,%.3f)',x(1),y(1)), ...
-          'Color',[0.2 0.2 0.2], 'FontSize',8, ...
-            'HorizontalAlignment','left', 'VerticalAlignment','top');
-
-    %# infinite loop
-    i = 1;                                       %# index
-    while true
-        %# update point & text
-        set(hLine, 'XData',x(i), 'YData',y(i))
-     set(hTxt, 'Position',[x(i) y(i)], ...
-         'String',sprintf('(%.3f,%.3f)',[x(i) y(i)]))
-     drawnow                                  %# force refresh
-     %#pause(DELAY)                           %# slow down animation
-
-     i = rem(i+1,numPoints)+1;                %# circular increment
-    if ~ishandle(hLine), break; end          %# in case you close the figure
-    end
-end
-    
    
 function edit7_Callback(hObject, eventdata, handles)
 % hObject    handle to edit7 (see GCBO)
@@ -728,3 +675,26 @@ function edit7_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton11.
+function pushbutton11_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.pushbutton11.Visible='off';
+handles.pushbutton12.Visible='on';
+handles.uipanel7.Visible='on';
+handles.uipanel8.Visible='off';
+
+% --- Executes on button press in pushbutton12.
+function pushbutton12_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton12 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.pushbutton12.Visible='off';
+handles.pushbutton11.Visible='on';
+handles.uipanel7.Visible='off';
+handles.uipanel8.Visible='on';
+word = actxserver('Word.Application');
+wdoc = word.Documents.Open('C:\Users\Om\Desktop\Theory.docx');
