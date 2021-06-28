@@ -3,9 +3,9 @@ if ~isempty(CheckPoint)
     reshufle=perms(CheckPoint);
     [CheckMinDist,CheckWay]= CheckPointCalc(Start,Fin,reshufle,x,y,z,Rad);
     if Sigma==0
-        [matrix]=Graph(priority,x,y,z,Rad);%norm
+        [matrix]=Graph(priority,x,y,z,Rad);
     else
-        [matrix]=probability(priority,Sigma,x,y,z,Rad);%norm
+        [matrix]=probability(priority,Sigma,x,y,z,Rad);
     end
     %%%%%%%%%%%%%%%%%
     matrix0=matrix;
@@ -18,7 +18,7 @@ if ~isempty(CheckPoint)
             break
         end
         FullRute=cat(2,FullRute,rute);%объединение массивов
-        matrix0=OutOfArray(matrix0,FullRute);%исключение пройденных точек из возможного пути 
+        %matrix0=OutOfArray(matrix0,FullRute);%исключение пройденных точек из возможного пути 
     end 
 elseif isempty(CheckPoint)
     if Sigma==0
