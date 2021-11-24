@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 11-Jan-2021 18:25:47
+% Last Modified by GUIDE v2.5 24-Nov-2021 19:16:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -45,7 +45,7 @@ end
 
 
 % --- Executes just before GUI is made visible.
-function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
+function GUI_OpeningFcn(hObject, eventdata, handles, varargin)%инициализация
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -82,6 +82,9 @@ handles.pushbutton2.Enable = 'off';
 % uiwait(handles.figure1);
 
 
+
+
+
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -94,7 +97,7 @@ varargout{1} = handles.output;
 
 
 % --- Executes on mouse press over axes background.
-function axes1_ButtonDownFcn(hObject, eventdata, handles)
+function axes1_ButtonDownFcn(hObject, eventdata, handles)%обработчик кликов
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -142,7 +145,7 @@ end
 
 
 % --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
+function pushbutton1_Callback(hObject, eventdata, handles)%основа
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -300,16 +303,16 @@ if  handles.radiobutton5.Value == 1
 for i=1:size(clusterCoord,1)
 circleCenter=[clusterCoord(i,1) clusterCoord(i,2)];
 plot(circleCenter(1),circleCenter(2),'Marker','o','MarkerEdgeColor','red','MarkerSize',20);
-viscircles(circleCenter,clusterRad,'Color','blue','LineWidth',1); 
-% for i=1:1:size(clusterDots,3)
-%     pause(1);
-%     color=randi([1 16777215]);
-%     tempx(1,:)=clusterDots(:,1,i);
-%     tempy(1,:)=clusterDots(:,2,i);
-%     tempz(1,:)=clusterDots(:,3,i);
-%     dotsCount=clusterDots(1,4,i);
-%     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
-% end
+%viscircles(circleCenter,clusterRad,'Color','blue','LineWidth',1); 
+end
+colors=colorset(size(clusterDots,3));
+for i=1:1:size(clusterDots,3)
+    color=colors(1,i);
+    tempx(1,:)=clusterDots(:,1,i);
+     tempy(1,:)=clusterDots(:,2,i);
+     tempz(1,:)=clusterDots(:,3,i);
+     dotsCount=clusterDots(1,4,i); 
+     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
 end
 elseif handles.radiobutton6.Value == 1 
     rotate3d on
@@ -373,7 +376,7 @@ end
 
 
 % --- Executes on button press in pushbutton7.
-function pushbutton7_Callback(hObject, eventdata, handles)
+function pushbutton7_Callback(hObject, eventdata, handles) %замощение шестиугольниками
 % hObject    handle to pushbutton7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -383,8 +386,8 @@ circle_rad=str2double(get(handles.edit6,'String'));
 Scale=200;
 y_pos=0;
 even=0;
-counter=1;
-while y_pos<=Scale    
+counter=0;
+while y_pos<=Scale+Scale*0.1%переделать    
 
     if even
         x_pos=2*circle_rad;
@@ -392,10 +395,10 @@ while y_pos<=Scale
         x_pos=0.5*circle_rad;
     end
     while x_pos<=Scale
+        counter=counter+1;
         x(1,counter)=x_pos;
         y(1,counter)=y_pos;
         x_pos=x_pos+3*circle_rad;
-        counter=counter+1;
     end
         y_pos=y_pos+(sqrt(3)/2*circle_rad);
         even=xor(even,1);
@@ -411,27 +414,28 @@ end
 
 
 % --- Executes on button press in pushbutton8.
-function pushbutton8_Callback(hObject, eventdata, handles)
+function pushbutton8_Callback(hObject, eventdata, handles)%замощение квадратами
 % hObject    handle to pushbutton8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global Scale
 cla(handles.axes1);
+xlim([-50 250]);
+ylim([-50 250]);
 circle_rad=str2double(get(handles.edit6,'String'));
 side=(2*circle_rad)/sqrt(2);
 Scale=200;
-
 if (Scale - mod((Scale-0.5*circle_rad),(3*circle_rad))<0.5*circle_rad)   
 end
 y_pos=side/2;
-counter=1;
+counter=0;
 while y_pos<=Scale    
     x_pos=side/2;
     while x_pos<=Scale
+        counter=counter+1;
         x(1,counter)=x_pos;
         y(1,counter)=y_pos;
         x_pos=x_pos+side;
-        counter=counter+1;
     end
     y_pos=y_pos+side;
 end
@@ -443,7 +447,63 @@ for i=1:1:counter
     hold off
 end
 
-
+% --- Executes on button press in pushbutton9.
+function pushbutton9_Callback(hObject, eventdata, handles)%замощение треугольниками
+% hObject    handle to pushbutton9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global Scale
+cla(handles.axes1);
+circle_rad=str2double(get(handles.edit6,'String'));
+Scale=200;
+a=circle_rad*sqrt(3);
+h=sqrt(a^2-1/4*a^2);
+even=true;
+ccount=1;%%колличество кругов
+h1=1/2*a*tan(pi/6);
+y_pos=h1;
+x_pos=1/2*a;
+x(1,ccount)=x_pos;
+y(1,ccount)=y_pos;
+while y_pos<=Scale
+xstop=false;
+    if even
+        x_pos=1/2*a;
+        while ~xstop
+            if x_pos<=Scale
+                ccount=ccount+1;
+                x(1,ccount)=x_pos;
+                y(1,ccount)=y_pos;
+            else
+                xstop=true;
+            end
+            x_pos=x_pos+a;
+        end
+        y_pos=y_pos+sqrt(circle_rad^2-1/4*a^2);
+        even=false;
+    else
+        x_pos=a;
+        while ~xstop
+            if x_pos<=Scale
+                ccount=ccount+1;
+                x(1,ccount)=x_pos;
+                y(1,ccount)=y_pos;
+            else
+                xstop=true;
+            end
+            x_pos=x_pos+a;
+        end
+        y_pos=y_pos+h1*2;
+        even=true;
+    end
+end
+for i=1:1:ccount
+    circleCenter=[x(1,i) y(1,i)];
+    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1);
+    hold on
+    plot(x(i),y(i),'o','MarkerEdgeColor','red');
+    hold off
+end
 
 
 function edit6_Callback(hObject, eventdata, handles)
@@ -617,56 +677,27 @@ hold on
 hold off
 
 
-% --- Executes on button press in pushbutton9.
-function pushbutton9_Callback(hObject, eventdata, handles)%замощение шестиугольниками
-% hObject    handle to pushbutton9 (see GCBO)
+% --------------------------------------------------------------------
+function Untitled_1_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global Scale
-cla(handles.axes1);
-circle_rad=str2double(get(handles.edit6,'String'));
-Scale=200;
-counter=1;
-bias = 0;
-y_pos = 0.5*circle_rad;
-x_pos = bias;
-even=0;
-for j=0:1:1
-    while y_pos<=Scale
-        x_pos = bias;
-        while x_pos<=Scale
-          x(1,counter)=x_pos;
-          y(1,counter)=y_pos;
-          x_pos=x_pos+2*circle_rad;
-          counter=counter+1;
-        end
-        y_pos=y_pos+(1.5*circle_rad);
-        even=xor(even,1);
-    end
-    bias = circle_rad;
-    x_pos = bias;
-    y_pos=circle_rad;
-end
-for i=1:1:counter
-    circleCenter=[x(1,i) y(1,i)];
-    viscircles(circleCenter,circle_rad,'Color','blue','LineWidth',1);
-    hold on
-    plot(x(i),y(i),'o','MarkerEdgeColor','red');
-    hold off
-end
-   
-function edit7_Callback(hObject, eventdata, handles)
-% hObject    handle to edit7 (see GCBO)
+open \Scrypt.pdf
+
+
+
+function edit9_Callback(hObject, eventdata, handles)
+% hObject    handle to edit9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit7 as text
-%        str2double(get(hObject,'String')) returns contents of edit7 as a double
+% Hints: get(hObject,'String') returns contents of edit9 as text
+%        str2double(get(hObject,'String')) returns contents of edit9 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit7_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit7 (see GCBO)
+function edit9_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -676,25 +707,42 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+%---convert double type to rcg string value
 
-% --- Executes on button press in pushbutton11.
-function pushbutton11_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton11 (see GCBO)
+    %%
+
+% --- Executes on button press in pushbutton14.
+function pushbutton14_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.pushbutton11.Visible='off';
-handles.pushbutton12.Visible='on';
-handles.uipanel7.Visible='on';
-handles.uipanel8.Visible='off';
+global x y
+Set(:,1)=x;
+Set(:,2)=y;
+K=str2double(get(handles.edit9,'String'));
+rng(1);
+[idx,C]= kmeans(Set,K);
+Color=unique(idx);
+Color1=colorset(size(Color,1));
+%%формирование colormatrix
+for i=1:size(idx,1)
+    colormatrix(i)=Color1(1,idx(i,1));
+end
+%%
+z=zeros(1,length(x));
+hold on
+DrawLines([],[],[],[],[],[],x,y,z,colormatrix);
+for i=1:size(C,1)
+plot(C(i,1),C(i,2),'Marker','x','MarkerFaceColor','Red','Hittest','off','MarkerSize',15);
+end
+hold off
+% for i=1:1:idx(clusterDots,3)
+%     pause(1);
+%     color=randi([1 16777215]);
+%     tempx(1,:)=clusterDots(:,1,i);
+%     tempy(1,:)=clusterDots(:,2,i);
+%     tempz(1,:)=clusterDots(:,3,i);
+%     dotsCount=clusterDots(1,4,i);
+%     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
+% end
 
-% --- Executes on button press in pushbutton12.
-function pushbutton12_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton12 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-handles.pushbutton12.Visible='off';
-handles.pushbutton11.Visible='on';
-handles.uipanel7.Visible='off';
-handles.uipanel8.Visible='on';
-word = actxserver('Word.Application');
-wdoc = word.Documents.Open('C:\Users\Om\Desktop\Theory.docx');
