@@ -1,6 +1,5 @@
-function [CheckMinDist, CheckWay]=CheckPointCalc(Start,Fin,reshufle,x,y,z,Rad)
-%reshufle - все возможные перестановки
-   
+function [CheckMinDist, CheckWay]=CheckPointCalc(Start,Fin,reshufle,x,y,z,~)
+%reshufle - все возможные перестановки 
 %x,y - соответствующие координаты всех точек
 CheckMinDist=Inf;
 k=size(reshufle);
