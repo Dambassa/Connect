@@ -11,9 +11,11 @@ function [colors] = colorset(x)
             colors(1,i)=set(1,randomset(1,i));
         end
     else
-    %        Z=randi([1 16777215]);
-    %color="#" + string(dec2hex(Z,6));
-    %Color1(1,i)=color;
+        for i=1:x
+            Z=randi([1 16777215]);
+            color="#" + string(dec2hex(Z,6));
+            colors(1,i)=color;    
+        end
     end
 end
 

@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 24-Nov-2021 19:16:02
+% Last Modified by GUIDE v2.5 14-Jan-2022 03:36:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -196,7 +196,6 @@ elseif K==1
     elseif handles.radiobutton2.Value == 1
         priority=randi([2,10],1,PointCount);
     end
-    
     colormatrix=colorPriority(priority);
     %%%%%%%%%%%%%%%%%%%%подготовка axes
     rotate3d off
@@ -746,3 +745,11 @@ hold off
 %     DrawLines([],[],0,[],dotsCount,[],tempx,tempy,tempz,color);
 % end
 
+
+
+% --- Executes on button press in pushbutton15.
+function pushbutton15_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Testing;
